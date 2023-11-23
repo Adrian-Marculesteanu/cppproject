@@ -1,28 +1,34 @@
 #include <iostream>
 #include <string>
 
-class EventLocation
-{
-	int noSeats;
-	int noRows;
-	int zones;
-	char* locationName;
-public:
-	EventLocation(int seats, int rows, int zone, char* locationName)
-		:noSeats(seats), noRows(rows), zones(zone)
-	{
-		if (noSeats < 0 || noRows < 0 || zones < 0)
-		{
-			throw std::exception("Invalid values");
-		}
-		this->locationName = new char[strlen(locationName) + 1];
-		strcpy_s(this->locationName, strlen(locationName)+1, locationName);
-	}
+enum class SeatType{NORMAL,SPECIAL_NEEDS,VIP};
 
-}
+class EventDetails
+{
+	const int EventId = 0;
+	char* eventLocation = nullptr;
+	std::string eventName = "";
+	std::string eventDate = "";
+	std::string eventTime = "";
+	int maxParticipants = 0;
+
+	static int noEvents;
+public:
+
+};
+class SeatsDetails
+{
+	int noNormalSeats = 0;
+	int noVIPSeats = 0;
+	int noSpecialNeedsSeats = 0;
+public:
+};
+
+
+int EventDetails::noEvents = 0;
 
 
 int main()
 {
-
+	;
 }
