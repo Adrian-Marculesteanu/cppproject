@@ -5,6 +5,7 @@ enum class SeatType{NORMAL,SPECIAL_NEEDS,VIP};
 
 class Event
 {
+	bool eventStatus= false;
 	int eventId = 0;
 	char* eventLocation = nullptr;
 	std::string eventName = "";
@@ -14,10 +15,25 @@ class Event
 
 	static int noEvents;
 public:
-	const static int MIN_NAME_SIZE=3;
-	
+	const static int MIN_NAME_SIZE = 3;
+
 
 	//GETTERS AND SETTERS 
+	bool getStatus()
+	{
+		if (this->eventStatus == true)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	bool setStatus(bool status)
+	{
+		this->eventStatus = status;
+	}
 
 	int getEventId()
 	{
@@ -53,7 +69,7 @@ public:
 	}
 	void setEventTime(std::string time)
 	{
-		if (time.size() != 5||time[3]!=':')
+		if (time.size() != 5 || time[3] != ':')
 		{
 			throw std::exception("Not valid time format (ex: 22:53)");
 		}
@@ -75,16 +91,16 @@ public:
 	}
 
 
-	 char* getEventLocation()
+	char* getEventLocation()
 	{
-		 char* copy;
-		 if(this->eventLocation == nullptr)
+		char* copy;
+		if (this->eventLocation == nullptr)
 		{
-			 return nullptr;
+			return nullptr;
 		}
-		 char* copy = new char[strlen(this->eventLocation) + 1];
-		 strcpy_s(copy, strlen(this->eventLocation) + 1, this->eventLocation);
-		 return copy;
+		char* copy = new char[strlen(this->eventLocation) + 1];
+		strcpy_s(copy, strlen(this->eventLocation) + 1, this->eventLocation);
+		return copy;
 
 	}
 	void setEventLocation(char* location)
@@ -144,7 +160,7 @@ public:
 		noEvents++;
 	}
 
-	
+
 	Event(int id, std::string name)
 	{
 		this->setEventId(id);
@@ -152,9 +168,10 @@ public:
 		noEvents++;
 	}
 
-	Event(int id, char* location, std::string name, std::string date, std::string time, int noParticipants)
+	Event(int id, char* location, std::string name, std::string date, std::string time, int noParticipants,bool status)
 	{
 		this->setEventId(id);
+		this->setStatus(status);
 		this->setEventName(name);
 		this->setEventTime(time);
 		this->setMaxParticipants(noParticipants);
@@ -165,6 +182,7 @@ public:
 	Event(Event& source)
 	{
 		this->setEventId(source.getEventId());
+		this->setStatus(source.getStatus());
 		this->setEventName(source.getEventName());
 		this->setEventTime(source.getEventTime());
 		this->setMaxParticipants(source.getMaxParticipants());
@@ -200,8 +218,117 @@ public:
 
 	// OPERATORS OVERLOAD
 
+	Event& operator=(Event& source)
+	{
+		if (&source == this)
+		{
+			return;
+		}
+		this->setEventId(source.getEventId());
+		this->setEventName(source.getEventName());
+		this->setEventTime(source.getEventTime());
+		this->setMaxParticipants(source.getMaxParticipants());
+		this->setEventLocation(source.getEventLocation());
+		delete[] this->eventDate;
+		this->setEventDate(source.getEventDate());
+		return *this;
+	}
+
+	friend void operator<<(std::ostream& console, Event& source);
+	friend void operator>>(std::istream& input, Event& source);
+
+	bool operator==(Event& other)
+	{
+		if (this->eventName == other.eventName && strcmp(eventDate, other.eventDate) == 0 && this->eventTime == other.eventTime)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	Event& operator+=(int add)
+	{
+		if (add > 0)
+		{
+			this->maxParticipants += add;
+		}
+		return *this;
+	}
+	Event& operator-=(int sub)
+	{
+		if (sub > 0 && this->maxParticipants - sub >= 0)
+		{
+			this->maxParticipants -= sub;
+		}
+		return*this;
+	}
+	bool operator<=(Event& other)
+	{
+		return this->maxParticipants <= other.maxParticipants;
+	}
+
+	Event& operator++() 
+	{
+		++this->maxParticipants;
+		return*this;
+	}
+	Event& operator++(int)
+	{
+		Event temp = *this;
+		++(*this);
+		return temp;
+	}
+	Event& operator!()
+	{
+		this->eventStatus = !(this->eventStatus);
+		return*this;
+	}
 
 };
+
+
+void operator<<(std::ostream& console, Event& source)
+{
+	console << std::endl << "Event Id: " << source.getEventId();
+	console << std::endl << "Event name: " << source.getEventName();
+	console << std::endl << "Event date: " << source.getEventDate();
+	console << std::endl << "Event time: " << source.getEventTime();
+	char* location= source.getEventLocation();
+	console << std::endl << "Event location: " << location;
+	console << std::endl << "Max participants amount: " << source.getMaxParticipants();
+}
+void operator>>(std::istream& input, Event& source)
+{
+	int eventId, maxParticipants;
+	std::string eventName, eventTime,eventDate;
+	char* location;
+	char temp[100];
+	std::cout << "\nThe event id is: ";
+	input >> eventId;
+	std::cout << "\nThe event name is: ";
+	input >> eventName;
+	std::cout << "\nThe event time is: ";
+	input >> eventTime;
+	std::cout << "\nThe event date is: ";
+	input >> eventDate;
+	std::cout << "\nThe event location is: ";
+	input >> temp;
+	std::cout << "\nMax participation amount is: ";
+	input >> maxParticipants;
+	
+	location = new char[strlen(temp) + 1];
+	strcpy_s(location, strlen(temp) + 1, temp);
+
+	source.setEventId(eventId);
+	source.setEventName(eventName);
+	source.setEventTime(eventTime);
+	source.setEventLocation(location);
+	source.setEventDate(eventDate);
+	source.setMaxParticipants(maxParticipants);
+
+}
 
 class SeatsDetails
 {
