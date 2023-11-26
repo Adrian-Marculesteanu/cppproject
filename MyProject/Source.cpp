@@ -1,9 +1,11 @@
 #include <iostream>
 #include <string>
 
+enum TicketType { NORMAL, VIP, SPECIAL_NEEDS };
 
 class Event
 {
+private:
 	bool eventStatus= false;
 	int eventId = 0;
 	char* eventLocation = nullptr;
@@ -338,7 +340,7 @@ void operator>>(std::istream& input, Event& source)
 
 class Seats
 {
-
+private:
 	char seatsDescription[30] = "";
 	int totalNormalSeats = 0;
 	int totalVIPSeats = 0;
@@ -655,8 +657,269 @@ void operator>>(std::istream& input, Seats& source)
 class Ticket
 {
 
-};
+private:
+	int ticketId=0;
+	char ownerName[30] = "";
+	TicketType* ticketType=nullptr;
+	int ticketPrice=0;
+	bool isValid=0;
 
+	static int noTickets;
+public:
+
+	//GETTERS AND SETTERS 
+
+	int getTicketId()
+	{
+		return this->ticketId;
+	}
+	void setTicketId(int id)
+	{
+		if (id > 0) {
+			this->ticketId = id;
+		}
+		else {
+			throw std::exception("ID can't be negative");
+		}
+	}
+	std::string getOwnerName()
+	{
+		return std::string(this->ownerName);
+	}
+	void setOwnerName(std::string owner)
+	{
+		int i;
+		if (owner.size() < 3)
+		{
+			throw std::exception("Name is too short!");
+		}
+		if (owner.size() > sizeof(this->ownerName))
+		{
+			throw std::exception("Name too long");
+		}
+		for (i = 0;i < owner.size();i++)
+		{
+			this->ownerName[i] = owner[i];
+		}
+		this->ownerName[i] = '\0';
+	}
+	void setTicketType(const TicketType& type) {
+		if (this->ticketType == nullptr) {
+			this->ticketType = new TicketType(type);
+		}
+		else {
+			*ticketType = type; 
+		}
+	}
+	 TicketType& getTicketType()  {
+		if (this->ticketType == nullptr) {
+			 TicketType defaultTicketType=NORMAL;
+			return defaultTicketType;
+		}
+		return *ticketType;
+	}
+	void setTicketPrice(int price)
+	{
+		if (price > 0) {
+			this->ticketPrice = price;
+		}
+		else {
+			throw std::exception("Price can't be negative");
+		}
+	 }
+	int getTicketPrice()
+	{
+		return this->ticketPrice;
+	}
+	bool getIsValid()
+	{
+		return this->isValid;
+	}
+	void setIsValid(bool valid)
+	{
+		this->isValid = valid;
+	}
+
+	
+	
+	//CONSTRUCTORS AND DESTRUCTOR
+	Ticket()
+	{
+		this->setOwnerName("John Doe");
+		this->setIsValid(true);
+		this->setTicketType(NORMAL);
+		noTickets++;
+	}
+	Ticket(std::string name, TicketType type)
+	{
+		this->setOwnerName(name);
+		this->setTicketType(type);
+		this->setIsValid(true);
+		noTickets++;
+	}
+	Ticket(int id, std::string name, TicketType type,int price)
+	{
+		this->setTicketId(id);
+		this->setOwnerName(name);
+		this->setTicketPrice(price);
+		this->setTicketType(type);
+		this->setIsValid(true);
+		noTickets++;
+	}
+	Ticket(Ticket& source)
+	{
+		this->setTicketId(source.getTicketId());
+		this->setOwnerName(source.getOwnerName());
+		this->setTicketPrice(source.getTicketPrice());
+		this->setTicketType(source.getTicketType());
+		this->setIsValid(source.getIsValid());
+		noTickets++;
+	}
+	~Ticket()
+	{
+		delete[] this->ticketType;
+		noTickets--;
+	}
+
+	//GENERIC METHODS FOR DISPLAY
+
+	void DisplayOwnerName()
+	{
+		std::cout << "\n The ticket owner is: " << getOwnerName();
+	}
+	void DisplayTicketInformation()
+	{
+		std::cout << "\n The ticket ID is:  " << getTicketId();
+		std::cout << "\n The ticket owner is: " << getOwnerName();
+		std::cout << "\n The ticket price is: " << getTicketPrice();
+		std::cout << "\n The ticket type is: " << getTicketType();
+		std::cout << "\n The ticket status is: " << getIsValid();
+	}
+
+	//OVERLOADING THE OPERATORS 
+	Ticket& operator=(Ticket& source)
+	{
+		if (&source == this)
+		{
+			return *this;
+		}
+		this->setTicketId(source.getTicketId());
+		this->setOwnerName(source.getOwnerName());
+		this->setTicketPrice(source.getTicketPrice());
+		this->setTicketType(source.getTicketType());
+		this->setIsValid(source.getIsValid());
+		return*this;
+	}
+
+	bool operator==(Ticket& other)
+	{
+		if (std::string(this->ownerName) == std::string(other.ownerName) && this->ticketId == other.ticketId)
+		{
+			return true;
+		}
+			return false;
+	}
+	friend void operator<<(std::ostream& console, Seats& source);
+	friend void operator>>(std::istream& input, Seats& source);
+
+	bool operator <(Ticket& other) {
+		if (this->ticketPrice < other.ticketPrice)
+		{
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	 Ticket& operator+=(int add){
+		{
+			if (add > 0)
+			{
+				this->ticketPrice += add;
+			}
+			else {
+				throw std::exception("Number can't be negative");
+			}
+		}
+	}
+	 Ticket& operator-=(int sub) {
+		{
+			if (sub > 0)
+			{
+				this->ticketPrice -= sub;
+			}
+			else {
+				throw std::exception("Number can't be negative");
+			}
+		}
+	}
+	 Ticket& operator++()
+	 {
+		 ++(this->ticketPrice);
+		 return* this;
+	 }
+	 Ticket& operator++(int)
+	 {
+		 Ticket temp = *this;
+		 ++(*this);
+		 return temp;
+	 }
+	 bool operator!()
+	 {
+		 this->isValid = !this->isValid;
+		 return this->isValid;
+	 }
+
+};
+int Ticket::noTickets = 0;
+void operator<<(std::ostream& console, Ticket& source)
+{
+	console << std::endl << "\nTicket id: " << source.getTicketId();
+	console << std::endl << "\nTicket owner name: " << source.getOwnerName();
+	console << std::endl << "\nTicket price is: " << source.getTicketPrice();
+	console << std::endl << "Ticket type is:" << source.getTicketType();
+	console << std::endl << "Ticket status: " << source.getIsValid();
+
+}
+void operator>>(std::istream& input, Ticket& source)
+{
+	int id, price;
+	bool valid;std::string ownerName;
+	char temp[30];
+	TicketType type;
+	std::string typeString;
+	std::cout << "\nWhat is the ticket id?:";
+	input >> id;
+	source.setTicketId(id);
+	std::cout << "\nWhat is the price of the ticket?";
+	input >> price;
+	source.setTicketPrice(price);
+	std::cout << "\n What is the status of the ticket? 0-not active// 1-active";
+	input >> valid;
+	source.setIsValid(valid);
+	std::cout << "\nWhat is the name of the owner?";
+	input.ignore();
+	std::getline(input, ownerName); 
+	source.setOwnerName(ownerName);
+	std::string ticketTypeStr;
+	std::cout << "\nWhat is the ticket type? NORMAL/VIP/SPECIAL_NEEDS: ";
+	input >> typeString;
+	if (typeString == "NORMAL") {
+		type = TicketType::NORMAL;
+	}
+	else if (typeString == "VIP") {
+		type = TicketType::VIP;
+	}
+	else if (typeString == "SPECIAL_NEEDS") {
+		type = TicketType::SPECIAL_NEEDS;
+	}
+	else {
+		throw std::invalid_argument("Invalid ticket type entered.");
+	}
+
+	source.setTicketType(type);
+
+}
 
 
 int main()
@@ -669,31 +932,30 @@ int main()
 	//const char* location2 = "Bucharest";
 	//Event event2(10, location2,"Festival", "24/12/2000", "22:22", 100, true);
 	//const char* locationNew = "Average Club";
-	////std::cout << event1;
-	////std::cout << event2;
+	//std::cout << event1;
+	//std::cout << event2;
 	//event1 = event2;
-	////std::cout << std::endl << event1;
-	////Event event3;
-	////std::cin >> event3;
-	////std::cout << std::endl << event3;*/
-	////Event event3(event1);
-	////event3.setEventName("SCHOOL");
-	////std::cout << event3;
+	//std::cout << std::endl << event1;
+	//Event event3;
+	//std::cin >> event3;
+	//std::cout << std::endl << event3;
+	//event3.setEventName("SCHOOL");
+	//std::cout << event3;
 
-	////if (event2 == event3)
-	////{
-	////	std::cout << "Are equal";
-	////}
-	////else { std::cout<<"Are different"; }
-	///*event2.DisplayComprehensiveInfo();event2.DisplayEssentialInfo();*/
-	////event2 += (15);event2 -= (10);
-	////std::cout << std::endl << "Participation count after adding 15 and substracting 10: " << event2.getMaxParticipants();
-	////
-	//////if (event2 <= event1) std::cout << "\n mai mic e2 ca e1";
-	//////else{ std::cout << "\n mai mic e1 ca e2"; }
-	////event1++;std::cout << "Max participants: " << event1.getMaxParticipants();
-	////!event1;std::cout << "Status is now: " << event1.getStatus();
-	////!event1;std::cout << "Status is now: " << event1.getStatus();
+	//if (event2 == event3)
+	//{
+	//	std::cout << "Are equal";
+	//}
+	//else { std::cout<<"Are different"; }
+	//event2.DisplayComprehensiveInfo();event2.DisplayEssentialInfo();
+	//event2 += (15);event2 -= (10);
+	//std::cout << std::endl << "Participation count after adding 15 and substracting 10: " << event2.getMaxParticipants();
+	//
+	//if (event2 <= event1) std::cout << "\n mai mic e2 ca e1";
+	//else{ std::cout << "\n mai mic e1 ca e2"; }
+	//event1++;std::cout << "Max participants: " << event1.getMaxParticipants();
+	//!event1;std::cout << "Status is now: " << event1.getStatus();
+	//!event1;std::cout << "Status is now: " << event1.getStatus();
 	//event1.setEventLocation(locationNew);
 	//std::cout << "New location is: " << event1.getEventLocation();
 	//event1.setEventName("Cristian");
@@ -703,27 +965,46 @@ int main()
 	//event1.setEventTime("15:30");
 	//std::cout << "New time is: " << event1.getEventTime();
 	//Seats seats1(20, 10, 5, 5);
-	///*std::cout << "total seats is : " << seats1.getTotalSeats();
+	//std::cout << "total seats is : " << seats1.getTotalSeats();
 	//seats1.setTotalSeats(50);
-	//std::cout << "total seats is : " << seats1.getTotalSeats();*/
+	//std::cout << "total seats is : " << seats1.getTotalSeats();
 	//seats1.setSeatsDescription("Seats for football game");
-	///*std::cout<<"The description is:  "<<seats1.getSeatsDescription();*/
+	//std::cout<<"The description is:  "<<seats1.getSeatsDescription();
 	//int seatArray[3] = { 100, 50, 20 };
 	//seats1.setAvailableSeats(seatArray);
 	//seats1.getAvailableSeats();
 	//Seats seats2(seats1);
 	//std::cout << "total seats is : " << seats1.getTotalSeats();
 	//std::cout << "The description is:  " << seats1.getSeatsDescription();
-	//Seats seats1(20, 10, 5, 5);
-	//int seatArray[3] = { 100, 50, 20 };
 	//seats1.setAvailableSeats(seatArray);
-	//////seats1.getAvailableSeats();
-	//////seats1.DisplayAvailableSeats();
-	//////seats1.DisplayTotalSeats();
-	//////std::cout << seats1;
-	////Seats seats2;
-	////std::cin >> seats2;
-	////std::cout << seats2;
+	//seats1.getAvailableSeats();
+	//seats1.DisplayAvailableSeats();
+	//seats1.DisplayTotalSeats();
+	//std::cout << seats1;
+	//std::cin >> seats2;
+	//std::cout << seats2;
 	//++seats1;
 	//std::cout << seats1;
+	//Ticket ticket1;
+	//std::cout << ticket1;
+	//Ticket ticket2(10, "Adrian Madalin", VIP, 100);
+	//std::cout << ticket2;
+	//Ticket ticket3;
+	//ticket3 = ticket2;
+	//if (ticket3 == ticket2)
+	//{
+	//	std::cout << "Adevarat";
+	//}
+	//else
+	//{
+	//	std::cout << "Fals";
+	//}
+	//++ticket3;
+	//std::cout << ticket3;
+	//!ticket3;
+	//std::cout<<std::endl<<ticket3.getIsValid();
+	//!ticket3;
+	//std::cout << std::endl << ticket3.getIsValid();
+	//ticket3.DisplayOwnerName();
+	//ticket3.DisplayTicketInformation();
 }
