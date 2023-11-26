@@ -23,14 +23,14 @@ public:
 	{
 		if (this->eventStatus == true)
 		{
-			return true;
+			return 1;
 		}
 		else
 		{
-			return false;
+			return 0;
 		}
 	}
-	bool setStatus(bool status)
+	void setStatus(bool status)
 	{
 		this->eventStatus = status;
 	}
@@ -39,7 +39,7 @@ public:
 	{
 		return this->eventId;
 	}
-	int setEventId(int id)
+	void setEventId(int id)
 	{
 		this->eventId = id;
 	}
@@ -69,13 +69,13 @@ public:
 	}
 	void setEventTime(std::string time)
 	{
-		if (time.size() != 5 || time[3] != ':')
+		if (time.size() != 5 || time[2] != ':')
 		{
 			throw std::exception("Not valid time format (ex: 22:53)");
 		}
 		for (int i = 0;i < 5;i++)
 		{
-			if (i == 3)
+			if (i == 2)
 			{
 				continue;
 			}
@@ -93,7 +93,6 @@ public:
 
 	char* getEventLocation()
 	{
-		char* copy;
 		if (this->eventLocation == nullptr)
 		{
 			return nullptr;
@@ -103,7 +102,7 @@ public:
 		return copy;
 
 	}
-	void setEventLocation(char* location)
+	void setEventLocation(const char* location)
 	{
 		if (location != nullptr)
 		{
@@ -168,7 +167,7 @@ public:
 		noEvents++;
 	}
 
-	Event(int id, char* location, std::string name, std::string date, std::string time, int noParticipants,bool status)
+	Event(int id,const char* location, std::string name, std::string date, std::string time, int noParticipants,bool status)
 	{
 		this->setEventId(id);
 		this->setStatus(status);
@@ -222,14 +221,13 @@ public:
 	{
 		if (&source == this)
 		{
-			return;
+			return *this;
 		}
 		this->setEventId(source.getEventId());
 		this->setEventName(source.getEventName());
 		this->setEventTime(source.getEventTime());
 		this->setMaxParticipants(source.getMaxParticipants());
 		this->setEventLocation(source.getEventLocation());
-		delete[] this->eventDate;
 		this->setEventDate(source.getEventDate());
 		return *this;
 	}
@@ -288,6 +286,16 @@ public:
 
 };
 
+int Event::noEvents = 0;
+
+class SeatsDetails
+{
+	int noNormalSeats = 0;
+	int noVIPSeats = 0;
+	int noSpecialNeedsSeats = 0;
+public:
+};
+
 
 void operator<<(std::ostream& console, Event& source)
 {
@@ -295,8 +303,15 @@ void operator<<(std::ostream& console, Event& source)
 	console << std::endl << "Event name: " << source.getEventName();
 	console << std::endl << "Event date: " << source.getEventDate();
 	console << std::endl << "Event time: " << source.getEventTime();
-	char* location= source.getEventLocation();
-	console << std::endl << "Event location: " << location;
+	char* location = source.getEventLocation();
+	if (location != nullptr)
+	{
+		console << std::endl << "Event location: " << location;
+	}
+	else
+	{
+		console << std::endl << "Event location: Not specified";
+	}
 	console << std::endl << "Max participants amount: " << source.getMaxParticipants();
 }
 void operator>>(std::istream& input, Event& source)
@@ -330,19 +345,53 @@ void operator>>(std::istream& input, Event& source)
 
 }
 
-class SeatsDetails
-{
-	int noNormalSeats = 0;
-	int noVIPSeats = 0;
-	int noSpecialNeedsSeats = 0;
-public:
-};
 
 
-int Event::noEvents = 0;
+
 
 
 int main()
 {
-	;
+	//AT THE MOMENT JUST A TESTING AREA FOR MY CLASSES
+
+
+
+	//Event event1;
+	//const char* location2 = "Bucharest";
+	//Event event2(10, location2,"Festival", "24/12/2000", "22:22", 100, true);
+	//const char* locationNew = "Average Club";
+	////std::cout << event1;
+	////std::cout << event2;
+	//event1 = event2;
+	////std::cout << std::endl << event1;
+	////Event event3;
+	////std::cin >> event3;
+	////std::cout << std::endl << event3;*/
+	////Event event3(event1);
+	////event3.setEventName("SCHOOL");
+	////std::cout << event3;
+
+	////if (event2 == event3)
+	////{
+	////	std::cout << "Are equal";
+	////}
+	////else { std::cout<<"Are different"; }
+	///*event2.DisplayComprehensiveInfo();event2.DisplayEssentialInfo();*/
+	////event2 += (15);event2 -= (10);
+	////std::cout << std::endl << "Participation count after adding 15 and substracting 10: " << event2.getMaxParticipants();
+	////
+	//////if (event2 <= event1) std::cout << "\n mai mic e2 ca e1";
+	//////else{ std::cout << "\n mai mic e1 ca e2"; }
+	////event1++;std::cout << "Max participants: " << event1.getMaxParticipants();
+	////!event1;std::cout << "Status is now: " << event1.getStatus();
+	////!event1;std::cout << "Status is now: " << event1.getStatus();
+	//event1.setEventLocation(locationNew);
+	//std::cout << "New location is: " << event1.getEventLocation();
+	//event1.setEventName("Cristian");
+	//std::cout << "New name is: " << event1.getEventName();
+	//event1.setEventDate("01/01/2001");
+	//std::cout << "New date is: " << event1.getEventDate();
+	//event1.setEventTime("15:30");
+	//std::cout << "New time is: " << event1.getEventTime();
+
 }
