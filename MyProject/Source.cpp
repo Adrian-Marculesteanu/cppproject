@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 
-enum TicketType { NORMAL, VIP, SPECIAL_NEEDS };
+enum Type { NORMAL, VIP, SPECIAL_NEEDS };
 
 class Seats
 {
@@ -11,6 +11,8 @@ private:
 	int totalVIPSeats = 0;
 	int totalSpecialNeedsSeats = 0;
 	int totalSeats = 0;
+	int rows = 0;
+	//Seat* seats;
 	//int* availableSeats = nullptr;
 
 	static int managedLocations;
@@ -425,18 +427,32 @@ public:
 		return copy;
 
 	}
-	void setEventLocation(const char* location)
+	//void setEventLocation(const char* location)
+	//{
+	//	if (location != nullptr)
+	//	{
+	//		this->eventLocation = new char[strlen(location) + 1];
+	//		strcpy_s(this->eventLocation, strlen(location) + 1, location);
+	//	}
+	//	else
+	//	{
+	//		throw std::exception("You are trying to pass a null pointer");
+	//	}
+	//}
+	void setEventLocation(std::string location)
 	{
-		if (location != nullptr)
+		if (!location.empty())
 		{
-			this->eventLocation = new char[strlen(location) + 1];
-			strcpy_s(this->eventLocation, strlen(location) + 1, location);
+			this->eventLocation = new char[location.length() + 1];
+			strcpy_s(this->eventLocation, location.length() + 1, location.c_str());
 		}
 		else
 		{
-			throw std::exception("You are trying to pass a null pointer");
+			throw std::invalid_argument("You are trying to pass an empty string");
 		}
 	}
+
+
 
 
 	/*int getMaxParticipants()
@@ -498,7 +514,7 @@ public:
 		noEvents++;
 	}
 
-	Event(int id,const char* location, std::string name, std::string date, std::string time,bool status,Seats& seats)
+	Event(int id,std::string location, std::string name, std::string date, std::string time,bool status,Seats& seats)
 	{
 		this->setEventId(id);
 		this->setStatus(status);
@@ -683,8 +699,44 @@ void operator>>(std::istream& input, Event& source)
 
 }
 
+class Seat
+{
+	bool isAvailable;
+	Type seatType;
+public:
+	bool getAvailability()
+	{
+		return this->isAvailable;
+	}
+	void setAvailability(bool status)
+	{
+		this->isAvailable = status;
+	}
+	Type getSeatType()
+	{
+		return this->seatType;
+	}
+	void setSeatType(Type type)
+	{
+		this->seatType = type;
+	}
 
-
+	Seat()
+	{
+		this->setAvailability(1);
+	}
+	Seat(Type type)
+	{
+		this->setAvailability(1);
+		this->setSeatType(type);
+	}
+	Seat(bool available,Type type)
+	{
+		this->setAvailability(available);
+		this->setSeatType(type);
+	}
+	
+};
 
 class Ticket
 {
@@ -692,9 +744,10 @@ class Ticket
 private:
 	int ticketId=0;
 	char ownerName[30] = "";
-	TicketType* ticketType=nullptr;
+	Type* ticketType=nullptr;
 	int ticketPrice=0;
 	bool isValid=0;
+	Seat* seat;
 
 	static int noTickets;
 public:
@@ -735,17 +788,17 @@ public:
 		}
 		this->ownerName[i] = '\0';
 	}
-	void setTicketType(const TicketType& type) {
+	void setTicketType(const Type& type) {
 		if (this->ticketType == nullptr) {
-			this->ticketType = new TicketType(type);
+			this->ticketType = new Type(type);
 		}
 		else {
 			*ticketType = type; 
 		}
 	}
-	 TicketType& getTicketType()  {
+	Type& getTicketType()  {
 		if (this->ticketType == nullptr) {
-			 TicketType defaultTicketType=NORMAL;
+			 Type defaultTicketType=NORMAL;
 			return defaultTicketType;
 		}
 		return *ticketType;
@@ -782,14 +835,14 @@ public:
 		this->setTicketType(NORMAL);
 		noTickets++;
 	}
-	Ticket(std::string name, TicketType type)
+	Ticket(std::string name, Type type)
 	{
 		this->setOwnerName(name);
 		this->setTicketType(type);
 		this->setIsValid(true);
 		noTickets++;
 	}
-	Ticket(int id, std::string name, TicketType type,int price)
+	Ticket(int id, std::string name, Type type,int price)
 	{
 		this->setTicketId(id);
 		this->setOwnerName(name);
@@ -917,7 +970,7 @@ void operator>>(std::istream& input, Ticket& source)
 {
 	int id, price;
 	bool valid;std::string ownerName;
-	TicketType type;
+	Type type;
 	std::string typeString;
 	std::cout << "\nWhat is the ticket id?:";
 	input >> id;
@@ -936,13 +989,13 @@ void operator>>(std::istream& input, Ticket& source)
 	std::cout << "\nWhat is the ticket type? NORMAL/VIP/SPECIAL_NEEDS: ";
 	input >> typeString;
 	if (typeString == "NORMAL") {
-		type = TicketType::NORMAL;
+		type = Type::NORMAL;
 	}
 	else if (typeString == "VIP") {
-		type = TicketType::VIP;
+		type = Type::VIP;
 	}
 	else if (typeString == "SPECIAL_NEEDS") {
-		type = TicketType::SPECIAL_NEEDS;
+		type = Type::SPECIAL_NEEDS;
 	}
 	else {
 		throw std::invalid_argument("Invalid ticket type entered.");
@@ -1048,5 +1101,9 @@ int main()
 	//Event event;
 	//std::cin >> event;
 	//std::cout << event;
-
+	//Seats seats;std::cin >> seats;
+	//Event event(1, "Bucharest street", "Footbal game", "24/12/2222", "22:22", 1, seats);
+	//std::cout << event;
+	//Event eventCopy(event);
+	//std::cout<<eventCopy.getEventLocation();
 }
