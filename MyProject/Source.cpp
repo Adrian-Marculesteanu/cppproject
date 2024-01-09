@@ -1,12 +1,13 @@
 #include <iostream>
 #include <string>
+#include <fstream>
 #include <random>
 enum Type { NORMAL, VIP, SPECIAL_NEEDS };
 
 class Seats
 {
 public:
-	/*char seatsDescription[30] = "";*/
+	
 	int totalNormalSeats = 0;
 	int totalVIPSeats = 0;
 	int totalSpecialNeedsSeats = 0;
@@ -14,11 +15,12 @@ public:
 	int availableNormalSeats = 0;
 	int availableVIPSeats = 0;
 	int availableSpecialNeedsSeats = 0;
-	//Seat* seats;
-	//int* availableSeats = nullptr;
-
+	
 	static int managedLocations;
 
+	//Seat* seats;
+	//int* availableSeats = nullptr;
+	/*char seatsDescription[30] = "";*/
 
 
 	//GETTERS AND SETTERS
@@ -134,9 +136,11 @@ public:
 
 	Seats()
 	{
-		//this-> setSeatsDescription("Description not available");
+		
 		this->setTotalSeats(0);
 		managedLocations++;
+
+		//this-> setSeatsDescription("Description not available");
 	}
 
 	Seats(int totalSeats, int normalSeats, int VIPSeats, int specialNeedsSeats)
@@ -234,49 +238,49 @@ public:
 	friend void operator>>(std::istream& input, Seats& source);
 
 
-	bool operator==(Seats& other)
-	{
-		if (this->totalSeats == other.totalSeats)
-		{
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-	bool operator<(Seats& other)
-	{
-		if (this->totalSeats < other.totalSeats)
-		{
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
+	//bool operator==(Seats& other)
+	//{
+	//	if (this->totalSeats == other.totalSeats)
+	//	{
+	//		return true;
+	//	}
+	//	else {
+	//		return false;
+	//	}
+	//}
+	//bool operator<(Seats& other)
+	//{
+	//	if (this->totalSeats < other.totalSeats)
+	//	{
+	//		return true;
+	//	}
+	//	else {
+	//		return false;
+	//	}
+	//}
 
-	Seats& operator+=(int add)
-	{
-		if (add > 0)
-		{
-			this->totalSeats += add;
-		}
-		return*this;
-	}
-	Seats& operator-=(int sub)
-	{
-		if (sub > 0)
-		{
-			this->totalSeats -= sub;
-		}
-		return*this;
-	}
+	//Seats& operator+=(int add)
+	//{
+	//	if (add > 0)
+	//	{
+	//		this->totalSeats += add;
+	//	}
+	//	return*this;
+	//}
+	//Seats& operator-=(int sub)
+	//{
+	//	if (sub > 0)
+	//	{
+	//		this->totalSeats -= sub;
+	//	}
+	//	return*this;
+	//}
 
-	Seats& operator++()
-	{
-		++(this->totalSeats);
-		return *this;
-	}
+	//Seats& operator++()
+	//{
+	//	++(this->totalSeats);
+	//	return *this;
+	//}
 	//Seats& operator++(int)
 	//{
 	//	Seats temp = *this;
@@ -286,6 +290,14 @@ public:
 
 
 
+
+	void serialize(std::ofstream& file) const {
+		file.write(reinterpret_cast<const char*>(this), sizeof(Seats));
+	}
+
+	void deserialize(std::ifstream& file) {
+		file.read(reinterpret_cast<char*>(this), sizeof(Seats));
+	}
 
 
 };
@@ -434,18 +446,6 @@ public:
 		return copy;
 
 	}
-	//void setEventLocation(const char* location)
-	//{
-	//	if (location != nullptr)
-	//	{
-	//		this->eventLocation = new char[strlen(location) + 1];
-	//		strcpy_s(this->eventLocation, strlen(location) + 1, location);
-	//	}
-	//	else
-	//	{
-	//		throw std::exception("You are trying to pass a null pointer");
-	//	}
-	//}
 	void setEventLocation(std::string location)
 	{
 		if (!location.empty())
@@ -458,24 +458,6 @@ public:
 			throw std::invalid_argument("You are trying to pass an empty string");
 		}
 	}
-
-
-
-
-	/*int getMaxParticipants()
-	{
-		return this->maxParticipants;
-	}
-	void setMaxParticipants(int participants)
-	{
-		if (participants < 0)
-		{
-			throw std::exception("Participants amount can't be negative");
-		}
-		this->maxParticipants = participants;
-	}*/
-
-
 
 	std::string getEventDate()
 	{
@@ -504,6 +486,33 @@ public:
 	{
 		this->eventSeats = seats;
 	}
+
+
+	//void setEventLocation(const char* location)
+//{
+//	if (location != nullptr)
+//	{
+//		this->eventLocation = new char[strlen(location) + 1];
+//		strcpy_s(this->eventLocation, strlen(location) + 1, location);
+//	}
+//	else
+//	{
+//		throw std::exception("You are trying to pass a null pointer");
+//	}
+//}
+
+/*int getMaxParticipants()
+{
+	return this->maxParticipants;
+}
+void setMaxParticipants(int participants)
+{
+	if (participants < 0)
+	{
+		throw std::exception("Participants amount can't be negative");
+	}
+	this->maxParticipants = participants;
+}*/
 
 	//CONSTRUCTORS AND DESTRUCTOR
 
@@ -555,18 +564,23 @@ public:
 
 	void DisplayEssentialInfo()
 	{
+		std::cout << std::endl;
 		std::cout << "\nEvent name: " << getEventName();
 		std::cout << "\nEvent date: " << getEventDate();
 		std::cout << "\nEvent time: " << getEventTime();
-	}
-	void DisplayComprehensiveInfo()
-	{
-		std::cout << "\nEvent id: " << getEventId();
-		std::cout << "\nEvent name: " << getEventName();
 		std::cout << "\nEvent location: " << getEventLocation();
-		std::cout << "\nEvent date: " << getEventDate();
-		std::cout << "\nEvent time: " << getEventTime();
+		std::cout << "\nAvailable normal seats:" << eventSeats.getAvailableSeats(NORMAL);
+		std::cout << "\nAvailable VIP seats:" << eventSeats.getAvailableSeats(VIP);
+		std::cout << "\nAvailable special needs seats:" << eventSeats.getAvailableSeats(SPECIAL_NEEDS);
 	}
+	//void DisplayComprehensiveInfo()
+	//{
+	//	std::cout << "\nEvent id: " << getEventId();
+	//	std::cout << "\nEvent name: " << getEventName();
+	//	std::cout << "\nEvent location: " << getEventLocation();
+	//	std::cout << "\nEvent date: " << getEventDate();
+	//	std::cout << "\nEvent time: " << getEventTime();
+	//}
 
 	// OPERATORS OVERLOAD
 
@@ -637,6 +651,51 @@ public:
 		return*this;
 	}
 
+
+	void serialize(std::ofstream& file) const {
+		file.write(reinterpret_cast<const char*>(&eventStatus), sizeof(eventStatus));
+		file.write(reinterpret_cast<const char*>(&eventId), sizeof(eventId));
+		int locationLength = strlen(eventLocation);
+		file.write(reinterpret_cast<const char*>(&locationLength), sizeof(locationLength));
+		file.write(eventLocation, locationLength);
+		int nameLength = eventName.length();
+		file.write(reinterpret_cast<const char*>(&nameLength), sizeof(nameLength));
+		file.write(eventName.c_str(), nameLength);
+		file.write(eventDate, sizeof(eventDate));
+		int timeLength = eventTime.length();
+		file.write(reinterpret_cast<const char*>(&timeLength), sizeof(timeLength));
+		file.write(eventTime.c_str(), timeLength);
+		eventSeats.serialize(file);
+	}
+
+
+
+	void deserialize(std::ifstream& file) {
+		file.read(reinterpret_cast<char*>(&eventStatus), sizeof(eventStatus));
+		file.read(reinterpret_cast<char*>(&eventId), sizeof(eventId));
+		int locationLength;
+		file.read(reinterpret_cast<char*>(&locationLength), sizeof(locationLength));
+		delete[] eventLocation;
+		eventLocation = new char[locationLength + 1];
+		file.read(eventLocation, locationLength);
+		eventLocation[locationLength] = '\0'; 
+		int nameLength = 0;
+		file.read(reinterpret_cast<char*>(&nameLength), sizeof(nameLength));
+		char* nameBuffer = new char[nameLength + 1];
+		file.read(nameBuffer, nameLength);
+		nameBuffer[nameLength] = '\0';
+		eventName = nameBuffer;
+		delete[] nameBuffer;
+		file.read(eventDate, sizeof(eventDate));
+		int timeLength = 0;
+		file.read(reinterpret_cast<char*>(&timeLength), sizeof(timeLength));
+		char* timeBuffer = new char[timeLength + 1];
+		file.read(timeBuffer, timeLength);
+		timeBuffer[timeLength] = '\0';
+		eventTime = timeBuffer;
+		delete[] timeBuffer;
+		eventSeats.deserialize(file);
+	}
 
 
 
@@ -749,7 +808,7 @@ class Ticket
 public:
 	int ticketId=0;
 	char ownerName[30] = "";
-	Type* ticketType=nullptr;
+	Type ticketType;
 	Event ticketEvent;
 
 
@@ -794,20 +853,14 @@ public:
 		}
 		this->ownerName[i] = '\0';
 	}
-	void setTicketType(const Type& type) {
-		if (this->ticketType == nullptr) {
-			this->ticketType = new Type(type);
-		}
-		else {
-			*ticketType = type; 
-		}
+
+	Type getTicketType()
+	{
+		return this->ticketType;
 	}
-	Type& getTicketType()  {
-		if (this->ticketType == nullptr) {
-			 Type defaultTicketType=NORMAL;
-			return defaultTicketType;
-		}
-		return *ticketType;
+	void setTicketType(Type type)
+	{
+		this->ticketType = type;
 	}
 
 	Event& getTicketEvent()
@@ -840,6 +893,21 @@ public:
 	//{
 	//	this->isValid = valid;
 	//}
+	/*void setTicketType(const Type& type) {
+		if (this->ticketType == nullptr) {
+			this->ticketType = new Type(type);
+		}
+		else {
+			*ticketType = type;
+		}
+	}
+	Type& getTicketType()  {
+		if (this->ticketType == nullptr) {
+			 Type defaultTicketType=NORMAL;
+			return defaultTicketType;
+		}
+		return *ticketType;
+	}*/
 
 	
 	
@@ -873,17 +941,19 @@ public:
 	Ticket(Ticket& source)
 	{
 		this->generateTicketId();
-	/*	this->setTicketId(source.getTicketId());*/
+
 		this->setOwnerName(source.getOwnerName());
-		//this->setTicketPrice(source.getTicketPrice());
+
 		this->setTicketType(source.getTicketType());
-	/*	this->setIsValid(source.getIsValid());*/
+
 		this->setTicketEvent(source.getTicketEvent());
 		noTickets++;
+		/*	this->setTicketId(source.getTicketId());
+		this->setTicketPrice(source.getTicketPrice());
+		this->setIsValid(source.getIsValid());*/
 	}
 	~Ticket()
 	{
-		delete[] this->ticketType;
 		noTickets--;
 	}
 
@@ -897,9 +967,9 @@ public:
 	{
 		std::cout << "\n The ticket ID is:  " << getTicketId();
 		std::cout << "\n The ticket owner is: " << getOwnerName();
-	/*	std::cout << "\n The ticket price is: " << getTicketPrice();*/
 		std::cout << "\n The ticket type is: " << getTicketType();
 		//std::cout << "\n The ticket status is: " << getIsValid();
+		//std::cout << "\n The ticket price is: " << getTicketPrice();
 	}
 
 
@@ -910,7 +980,7 @@ public:
 		case 1:
 			return "VIP";
 		case 2:
-			return "Normal";
+			return "Special Needs";
 		default:
 			return "Unknown";
 		}
@@ -923,11 +993,11 @@ public:
 		{
 			return *this;
 		}
-		/*this->setTicketId(source.getTicketId());*/
 		this->setOwnerName(source.getOwnerName());
-	/*	this->setTicketPrice(source.getTicketPrice());*/
 		this->setTicketType(source.getTicketType());
-		//this->setIsValid(source.getIsValid());
+		/*	this->setTicketPrice(source.getTicketPrice());
+		this->setIsValid(source.getIsValid());
+		/*this->setTicketId(source.getTicketId());*/
 		return*this;
 	}
 
@@ -990,17 +1060,31 @@ public:
 		// return this->isValid;
 	 //}
 
+	void serialize(std::ofstream& file) const {
+		file.write(reinterpret_cast<const char*>(&ticketId), sizeof(ticketId));
+		file.write(reinterpret_cast<const char*>(&ticketType), sizeof(ticketType));
+		file.write(ownerName, sizeof(ownerName));
+		ticketEvent.serialize(file);
+	}
+
+	void deserialize(std::ifstream& file) {
+		file.read(reinterpret_cast<char*>(&ticketId), sizeof(ticketId));
+		file.read(reinterpret_cast<char*>(&ticketType), sizeof(ticketType));
+		file.read(ownerName, sizeof(ownerName));
+		ticketEvent.deserialize(file);
+	}
+
 
 };
 int Ticket::noTickets = 0;
 void operator<<(std::ostream& console, Ticket& source)
 {
-	console << std::endl << "\nTicket id: " << source.getTicketId();
-	console << std::endl << "\nTicket owner name: " << source.getOwnerName();
-	//console << std::endl << "\nTicket price is: " << source.getTicketPrice();
+	console<<std::endl << "\nTicket id: " << source.getTicketId();
+	console << std::endl << "Event name: " << source.ticketEvent.getEventName();
+	console << std::endl << "Ticket owner name: " << source.getOwnerName();
 	console << std::endl << "Ticket type is:" << source.getTicketTypeString();
 	//console << std::endl << "Ticket status: " << source.getIsValid();
-
+	//console << std::endl << "\nTicket price is: " << source.getTicketPrice();
 }
 void operator>>(std::istream& input, Ticket& source)
 {
@@ -1008,15 +1092,6 @@ void operator>>(std::istream& input, Ticket& source)
 	std::string ownerName;
 	Type type;
 	std::string typeString;
-	//std::cout << "\nWhat is the ticket id?:";
-	//input >> id;
-	//source.setTicketId(id);
-	//std::cout << "\nWhat is the price of the ticket?";
-	//input >> price;
-	/*source.setTicketPrice(price);*/
-	//std::cout << "\n What is the status of the ticket? 0-not active// 1-active";
-	//input >> valid;
-	//source.setIsValid(valid);
 	std::cout << "\nWhat is the name of the owner?";
 	input.ignore();
 	std::getline(input, ownerName); 
@@ -1036,44 +1111,169 @@ void operator>>(std::istream& input, Ticket& source)
 	else {
 		throw std::invalid_argument("Invalid ticket type entered.");
 	}
-
 	source.setTicketType(type);
 
+	//std::cout << "\nWhat is the ticket id?:";
+//input >> id;
+//source.setTicketId(id);
+//std::cout << "\nWhat is the price of the ticket?";
+//input >> price;
+/*source.setTicketPrice(price);*/
+//std::cout << "\n What is the status of the ticket? 0-not active// 1-active";
+//input >> valid;
+//source.setIsValid(valid);
+
+}
+
+void generateTicket(Event& event)
+{
+	std::string name; Type type; int typeInteger;
+	std::cout << "\nWhat is your name? \n";
+	std::cin.ignore();
+	std::getline(std::cin, name);
+	std::cout << "What kind of ticket would you like? Please type the corresponding digit:\n ";
+	std::cout << "1-Normal ticket; 2-VIP Ticket; 3-Special Needs Ticket\n";
+	std::cin >> typeInteger;
+	while (typeInteger != 1 && typeInteger != 2 && typeInteger != 3) 
+	{
+		std::cout << "Invalid input. Please choose a valid ticket type (1, 2, or 3): ";
+		std::cin >> typeInteger;
+	}
+	if (typeInteger == 1)
+	{
+		type = NORMAL;
+	}
+	else if (typeInteger == 2)
+	{
+		type = VIP;
+	}
+	else if (typeInteger == 3)
+	{
+		type = SPECIAL_NEEDS;
+	}
+	else
+	{
+		std::cout << "You did not choose one of the variants provided";
+	}
+	if (typeInteger == 1 || typeInteger == 2 || typeInteger == 3)
+	{
+		Ticket ticket(name, type, event);
+		std::ofstream outFile("tickets.bin", std::ios::binary | std::ios::app);
+		{
+			if (!outFile.is_open()) {
+				std::cout << "File not open";
+			}
+			ticket.serialize(outFile);
+			outFile.close();
+			std::cout << ticket;
+		}
+	}
+}
+
+void searchTicketByID(int searchID)
+{
+	std::ifstream inFile("tickets.bin", std::ios::binary);
+	if (!inFile.is_open()) {
+		std::cout << "File not open." << std::endl;
+		return;
+	}
+
+	Ticket currentTicket;
+	bool found = false;
+
+	while (inFile.peek() != EOF) {
+		currentTicket.deserialize(inFile);
+
+		if (currentTicket.getTicketId() == searchID) {
+			found = true;
+			break;
+		}
+	}
+
+	inFile.close();
+
+	if (found==true) {
+		std::cout << "Ticket found!" << std::endl;
+	}
+	else {
+		std::cout << "Ticket not found." << std::endl;
+	}
 }
 
 
 
 int main()
 {
-	//AT THE MOMENT JUST A TESTING AREA FOR MY CLASSES
-	//Seats seats1(15, 5, 5, 5);
-	//seats1.setAvailableNormalSeats(1);
-	//seats1.setAvailableSpecialNeedsSeats(0);
-	//seats1.decrementAvailableSeats(NORMAL);
-	//seats1.decrementAvailableSeats(VIP);
-	//seats1.decrementAvailableSeats(SPECIAL_NEEDS);
-	//std::cout << seats1;
-	//Seats seat(15, 5, 5, 5);
-	//Event event(1, "Bucharest street", "Footbal match", "24/12/2022", "22:22", 1, seat);
-	//std::cout << std::endl << event.eventSeats.getAvailableSeats(NORMAL);
-	//Ticket ticket1("Cool name",NORMAL, event);
-	//Ticket ticket2("Cool name2", NORMAL, event);
-	//Ticket ticket3("Cool name2", NORMAL, event);
-	//Ticket ticket4("Cool name2", NORMAL, event);
-	//std::cout << std::endl << event.eventSeats.getAvailableSeats(NORMAL);
-	//Ticket ticket5("Cool name2", NORMAL, event);
-	//Ticket ticket6("Cool name2", NORMAL, event);
-
-	//std::cout << std::endl << event.eventSeats.getAvailableSeats(VIP);
 
 
+	std::ifstream inFile("events.bin", std::ios::binary);
+	if (!inFile.is_open()) {
+		std::cout << "Error opening file";
+	}
+	Event eventFootball,eventMovie,eventTheatre;
+	eventFootball.deserialize(inFile), eventMovie.deserialize(inFile);eventTheatre.deserialize(inFile);
+	inFile.close();
 
-	//Seats seats1(15, 5, 5, 5);
-	//Seats seats2(20, 13, 5, 2);
-	//Event event1(1, "Bucharest street", "Footbal match", "24/12/2022", "22:22", 1, seats1);
-	//Event event2(2, "Iasi", "Concert", "12/12/2023", "12:12",1, seats2);
-	//std::cout << event1;
-	//Ticket ticket1("Adrian Marculesteanu", VIP, event1);
-	//std::cout << ticket1;
-	//std::cout << event1;
+
+	int choice = 1;int ticketChoice;
+	std::cout << "\nHello! What would you like to do today? Please write the corresponding digit of your choice:\n";
+	while (choice != 0)
+	{
+		std::cout << "\n1- View the available events; 2-Buy a ticket for one of the events; 3-Search an ID in the list of tickets\nEntering '0' instead will exit the program\n";
+		std::cin >> choice;
+		if (choice == 1)
+		{
+			eventFootball.DisplayEssentialInfo();
+			eventMovie.DisplayEssentialInfo();
+			eventTheatre.DisplayEssentialInfo();
+		}
+		if (choice == 2)
+		{
+			do {
+				std::cout << "Which event would you like to buy a ticket for?\n 1-FCSB-CFR Cluj; 2-Murder on the Orient Express; 3-A Lost Letter\n";
+				std::cin >> ticketChoice;
+
+				if (ticketChoice == 1)
+				{
+					generateTicket(eventFootball);
+					std::cout << "\nDone! Thank you.";
+					break;
+				}
+				else if (ticketChoice == 2)
+				{
+					generateTicket(eventMovie);
+					std::cout << "\nDone! Thank you.";
+					break;
+				}
+				else if (ticketChoice == 3)
+				{
+					generateTicket(eventTheatre);
+					std::cout << "\nDone! Thank you.";
+					break;
+				}
+				else
+				{
+					std::cout << "You have not chosen one of the available events! Please input your option again\n";
+				}
+			} while (true);
+		}
+		if (choice == 3)
+		{
+			int searchedID;
+			std::cout << "\nPlease input the ID you wish to search!\n";
+			std::cin >> searchedID;
+			searchTicketByID(searchedID);
+		}
+	}
+
+
+	std::ofstream outFile("events.bin", std::ios::binary);
+	{
+		if (!outFile.is_open()) {
+			std::cout << "Error opening file";
+		}
+		eventFootball.serialize(outFile);eventMovie.serialize(outFile);eventTheatre.serialize(outFile);
+		outFile.close();
+	}
+
 }
